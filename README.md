@@ -4,15 +4,15 @@ Dieses Repository beschreibt, wie ich einen ewb (Energie Wasser Bern) Smartmeter
 
 ## Schnittstelle
 
-Die Kundeninformationsschnittstelle des Smartmeters muss vorhergehend über den Kundendienst von ewb freigeschaltet werden.
+Die Kundeninformationsschnittstelle des Smartmeters muss vorgängig über den Kundendienst von ewb freigeschaltet werden.
 Dabei sollte auch die Dokumentation der Schnittstelle mit den verwendeten OBIS-Codes mitgeliefert werden.
-Bei anderen Energieversorgern, welche ebenfalls diesen Zähler verwenden, steht diese Dokumentation öffentlich zur Verfügung, und deckt ähnliche Informationen ab, bspw. [BKW](https://www.bkw.ch/fileadmin/user_upload/03_Energie/03_01_Stromversorgung_Privat-_und_Gewerbekunden/Zaehlerablesung/BKW_faktenblatt_kundenschnittstelle_L_G_E450_E570_def_Web.pdf) ([Archiv](https://web.archive.org/web/20250508173627/https://www.bkw.ch/fileadmin/user_upload/03_Energie/03_01_Stromversorgung_Privat-_und_Gewerbekunden/Zaehlerablesung/BKW_faktenblatt_kundenschnittstelle_L_G_E450_E570_def_Web.pdf)).
-Bei der Schnittstelle handelt es sich um einen RJ12-Port, bei welchem die Drähte 3 und 4 für DLMS/COSEM über M-Bus verwendet werden.
+Bei anderen Energieversorgern, die ebenfalls diesen Zähler verwenden, steht diese Dokumentation öffentlich zur Verfügung und deckt ähnliche Informationen ab, bspw. [BKW](https://www.bkw.ch/fileadmin/user_upload/03_Energie/03_01_Stromversorgung_Privat-_und_Gewerbekunden/Zaehlerablesung/BKW_faktenblatt_kundenschnittstelle_L_G_E450_E570_def_Web.pdf) ([Archiv](https://web.archive.org/web/20250508173627/https://www.bkw.ch/fileadmin/user_upload/03_Energie/03_01_Stromversorgung_Privat-_und_Gewerbekunden/Zaehlerablesung/BKW_faktenblatt_kundenschnittstelle_L_G_E450_E570_def_Web.pdf)).
+Bei der Schnittstelle handelt es sich um einen RJ12-Port, bei dem die Drähte 3 und 4 für DLMS/COSEM über M-Bus verwendet werden.
 
 Die OBIS-Codes sind weiter unten zusätzlich in einer Tabelle beschrieben.
 
 In meinem Fall wurde die Schnittstelle ohne Verschlüsselung aktiviert.
-Wahrscheinlich ist dies das Standardvorgehen, ansonsten kann dies ggf. erwünscht werden.
+Wahrscheinlich ist dies das Standardvorgehen, ansonsten kann dies ggf. gewünscht werden.
 
 ## Hardware
 
@@ -21,14 +21,16 @@ Wahrscheinlich ist dies das Standardvorgehen, ansonsten kann dies ggf. erwünsch
 - RJ12 Kabel, optimalerweise Breakout [AliExpress](https://www.aliexpress.com/item/1005007821256603.html)
 - (optional) 3D-gedrucktes Gehäuse für das USB-MBUS Board, siehe Ordner `case` + USB-A-Verlängerungskabel
 
-Dies ist nicht der einzige Weg, wie ein solcher Smartmeter augelesen werden kann.
+Dies ist nicht der einzige Weg, wie ein solcher Smartmeter ausgelesen werden kann.
 Insbesondere ist die Auslesung auch mit einfacheren Geräten (bspw. ESP32) und ohne den USB-to-MBUS-Adapter möglich.
-In diesem Fall wurde primär Wert auf die Verwaltbarkeit (Zugriff per SSH) und eine einfache Softwarelösung gesetzt - ein kompaktes System war zweitrangig.
+In diesem Fall wurde primär Wert auf die Verwaltbarkeit (Zugriff per SSH) und eine einfache Softwarelösung gelegt – ein kompaktes System war zweitrangig.
+
+![Übersichtsbild mit Zähler, Raspberry Pi und USB-zu-M-Bus Board im 3D-gedruckten Gehäuse](img/overview.png)
 
 ## Software
 
 Der M-Bus-zu-USB Adapter präsentiert sich als USB-Serial Gerät unter Linux (`/dev/ttyUSBx`).
-Diese serielle Konsole wird mithilfe eines Python-Programms und der `gurux_dlms` Bibliothek eingelesen und schlussendlich über MQTT an Home Assistant übermittelt.
+Diese serielle Konsole wird mithilfe eines Python-Programms und der `gurux_dlms` Bibliothek eingelesen und schliesslich über MQTT an Home Assistant übermittelt.
 Der Code dafür befindet sich [hier](https://git.rack.farm/jmesserli/mbus-dlms-mqtt).
 
 ## Home Assistant Integration
@@ -60,7 +62,7 @@ mqtt:
       state_class: "total"
 ```
 
-Um die beiden Tarife zu kombinieren habe ich anschliessend noch zwei Template Sensoren definiert, welche beide Tarife aufsummieren.
+Um die beiden Tarife zu kombinieren, habe ich anschliessend noch zwei Template-Sensoren definiert, welche beide Tarife aufsummieren.
 Diese können unter `Geräte & Dienste > Tab Helfer > + Helfer erstellen` definiert werden.
 
 Template:
@@ -69,7 +71,7 @@ Template:
 {{ (states('sensor.energie_bezug_t1') | int + states('sensor.energie_bezug_t2') | int) / 1000 }}
 ```
 
-(Dabei wird zudem von Wh zu kWh umgewanelt, da dies etwas üblicher ist).
+(Dabei wird zudem von Wh zu kWh umgewandelt, da dies etwas üblicher ist).
 
 Masseinheit: `kWh`
 
@@ -81,7 +83,7 @@ Für die Lieferung analog, es sind einfach die Sensornamen anzupassen.
 
 Die folgenden OBIS-Codes stammen aus der Dokumentation.
 Ich habe teilweise abweichende OBIS-Codes gesehen, aber zur Orientierung reicht es.
-Weiter waren die Werte, welche ich ausgelesen habe, nicht in den angegebenen Einheiten - möglicherweise würde dies über irgend eine Konfiguration, welche gepusht wird, übermittelt. Generell waren es anstelle von Kilowatt einfach Watt und anstelle von Kilowattstunden Wattstunden.
+Weiter waren die Werte, welche ich ausgelesen habe, nicht in den angegebenen Einheiten – möglicherweise würde dies über irgendeine Konfiguration, welche gepusht wird, übermittelt. Generell waren es anstelle von Kilowatt einfach Watt und anstelle von Kilowattstunden Wattstunden.
 
 | Anzahl | Zeitintervall | Beschreibung                                                | OBIS-Code     | Einheit |
 | ------ | ------------- | ----------------------------------------------------------- | ------------- | ------- |
