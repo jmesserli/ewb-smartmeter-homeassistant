@@ -25,6 +25,14 @@ Dies ist nicht der einzige Weg, wie ein solcher Smartmeter ausgelesen werden kan
 Insbesondere ist die Auslesung auch mit einfacheren Geräten (bspw. ESP32) und ohne den USB-to-MBUS-Adapter möglich.
 In diesem Fall wurde primär Wert auf die Verwaltbarkeit (Zugriff per SSH) und eine einfache Softwarelösung gelegt – ein kompaktes System war zweitrangig.
 
+**Verkabelung des M-Bus-zu-USB Adapters**:
+
+![Mittlere Drähte 3 und 4 verbunden mit je einem Terminal des Adapter-Boards](img/mbus-wiring-sm.png)
+
+Die Polarität sollte nicht relevant sein.
+
+**Übersichtsbild**:
+
 ![Übersichtsbild mit Zähler, Raspberry Pi und USB-zu-M-Bus Board im 3D-gedruckten Gehäuse](img/overview-sm.png)
 
 ## Software
