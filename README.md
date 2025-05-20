@@ -25,7 +25,7 @@ Dies ist nicht der einzige Weg, wie ein solcher Smartmeter ausgelesen werden kan
 Insbesondere ist die Auslesung auch mit einfacheren Geräten (bspw. ESP32) und ohne den USB-to-MBUS-Adapter möglich.
 In diesem Fall wurde primär Wert auf die Verwaltbarkeit (Zugriff per SSH) und eine einfache Softwarelösung gelegt – ein kompaktes System war zweitrangig.
 
-![Übersichtsbild mit Zähler, Raspberry Pi und USB-zu-M-Bus Board im 3D-gedruckten Gehäuse](img/overview.png)
+![Übersichtsbild mit Zähler, Raspberry Pi und USB-zu-M-Bus Board im 3D-gedruckten Gehäuse](img/overview-sm.png)
 
 ## Software
 
@@ -60,6 +60,17 @@ mqtt:
       device_class: "energy"
       unit_of_measurement: "Wh"
       state_class: "total"
+    # Optional, falls die Leistung ebenfalls publiziert wird
+    - name: "Wirkleistung Bezug"
+      state_topic: "meter/energy_meter/1_7_0_wirkleistung_bezug"
+      device_class: "power"
+      unit_of_measurement: "W"
+      state_class: "measurement"
+    - name: "Wirkleistung Lieferung"
+      state_topic: "meter/energy_meter/2_7_0_wirkleistung_lieferung"
+      device_class: "power"
+      unit_of_measurement: "W"
+      state_class: "measurement"
 ```
 
 Um die beiden Tarife zu kombinieren, habe ich anschliessend noch zwei Template-Sensoren definiert, welche beide Tarife aufsummieren.
